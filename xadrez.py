@@ -94,10 +94,10 @@ class Xadrez:
             if 0 <= nx < 8 and 0 <= ny < 8:
                 destino = self.tabAtual[nx][ny]
 
-                if destino == ".":  # Movimento livre
+                if destino == ".": 
                     movimentos_validos.append((x, y, nx, ny))
                 elif (pedra.isupper() and destino.islower()) or (pedra.islower() and destino.isupper()):
-                    # Captura de peça adversária
+                    
                     movimentos_validos.append((x, y, nx, ny))
 
         return movimentos_validos
@@ -130,29 +130,29 @@ class Xadrez:
     def movimentoDama(self, pedra, x, y):
         movimentos_validos = []
 
-        # Movimentos possíveis da Dama: combina os movimentos de Torre e Bispo
+      
         direcoes = [
-            (-1, 0), (1, 0), (0, -1), (0, 1),  # Movimentos verticais e horizontais (Torre)
-            (-1, -1), (-1, 1), (1, -1), (1, 1)  # Movimentos diagonais (Bispo)
+            (-1, 0), (1, 0), (0, -1), (0, 1),  
+            (-1, -1), (-1, 1), (1, -1), (1, 1)
         ]
         
-        # Itera por todas as direções possíveis
+        
         for dx, dy in direcoes:
             nx, ny = x + dx, y + dy
             
             while 0 <= nx < 8 and 0 <= ny < 8:
                 destino = self.tabAtual[nx][ny]
 
-                if destino == ".":  # Casa vazia, movimento válido
+                if destino == ".":  
                     movimentos_validos.append((x, y, nx, ny))
                 elif (pedra.isupper() and destino.islower()) or (pedra.islower() and destino.isupper()):
-                    # Peça adversária, captura válida
+                  
                     movimentos_validos.append((x, y, nx, ny))
-                    break  # Depois de capturar, a Dama não pode continuar indo nessa direção
+                    break  
                 else:
-                    break  # Se encontrar uma peça da mesma cor, não pode continuar movendo nessa direção
+                    break  
 
-                # Continua o movimento na direção atual
+             
                 nx += dx
                 ny += dy
 
@@ -257,58 +257,58 @@ class Xadrez:
     
     def emXeque(self, cor, tabuleiro=None):
         if tabuleiro is None:
-            tabuleiro = self.tabAtual  # Usar o tabuleiro atual se não for fornecido um
+            tabuleiro = self.tabAtual  
 
         if cor == 'brancas':
             rei = 'R'
         else:
             rei = 'r'
 
-        # Encontrar a posição do rei
+      
         rei_x, rei_y = -1, -1
         for i in range(8):
             for j in range(8):
                 if tabuleiro[i][j] == rei:
                     rei_x, rei_y = i, j
-                    break  # Sai do loop interno
-            if rei_x != -1:  # Se já encontrou o rei, sai do loop externo também
+                    break  
+            if rei_x != -1: 
                 break  
 
         for i in range(8):
             for j in range(8):
                 pedra = tabuleiro[i][j]
                 if pedra == ".":
-                    continue  # Ignora as casas vazias
+                    continue  
 
-                # Se for peça do oponente, verificar se pode atacar o rei
+                
                 if (cor == 'brancas' and pedra.islower()) or (cor == 'pretas' and pedra.isupper()):
                     if self.validarLance(pedra, (i, j), (rei_x, rei_y), checkTurn=False):
-                        return True  # Retorna True se a peça pode atacar o rei
+                        return True  
         return False
     
     def buscarTodosLances(self):
         lances_possiveis = []
-        cor_atual = self.turno  # "brancas" ou "pretas"
+        cor_atual = self.turno  
 
-        # Percorre todas as casas do tabuleiro
+       
         for i in range(8):
             for j in range(8):
                 peca = self.tabAtual[i][j]
 
-                # Verifica se a peça pertence à cor que está no turno
+              
                 if (cor_atual == "brancas" and peca.isupper()) or (cor_atual == "pretas" and peca.islower()):
                     
-                    # Testa todos os possíveis movimentos dentro do tabuleiro (8x8)
-                    if peca.upper() == 'T':  # Torre
+                  
+                    if peca.upper() == 'T': 
                         movimentos_validos = self.movimentoTorre(peca, i, j)
-                    elif peca.upper() == 'C':  # Cavalo
+                    elif peca.upper() == 'C':  
                         movimentos_validos = self.movimentoCavalo(peca, i, j)
-                    elif peca.upper() == 'P':  # Peão
+                    elif peca.upper() == 'P': 
                         movimentos_validos = self.movimentoPeao(peca, i, j)
-                    elif peca.upper() == 'B':  # Bispo
+                    elif peca.upper() == 'B':  
                         movimentos_validos = self.movimentoBispo(peca, i, j)
 
-                    elif peca.upper() == 'R':  # Rei
+                    elif peca.upper() == 'R': 
                         movimentos_validos = self.movimentoRei(peca, i, j)
                         resultado_roque = self.pode_fazer_roque(cor_atual)
                         if resultado_roque == 'roque pequeno':
@@ -316,30 +316,30 @@ class Xadrez:
                         elif resultado_roque == 'roque grande':
                             lances_possiveis.append(((i, j), (i, j - 2)))
 
-                    elif peca.upper() == 'D':  # Dama
+                    elif peca.upper() == 'D':  
                         movimentos_validos = self.movimentoDama(peca, i, j)
                     
                     else:
-                        continue  # Se a peça ainda não foi implementada, ignora
+                        continue  
 
-                    # Valida cada movimento antes de adicionar
+                   
                     for movimento in movimentos_validos:
                         destino_i, destino_j = movimento[2], movimento[3]
                         
-                        # Validação do lance 
-                        if self.tabAtual[destino_i][destino_j] != '.':  # Se a casa de destino não estiver vazia
+                       
+                        if self.tabAtual[destino_i][destino_j] != '.': 
                             peca_destino = self.tabAtual[destino_i][destino_j]
                             if (cor_atual == "brancas" and peca_destino.isupper()) or (cor_atual == "pretas" and peca_destino.islower()):
-                                continue  # Se a casa de destino tem uma peça da mesma cor, ignora o movimento
+                                continue 
 
-                        # Se o movimento é válido, adiciona
+                       
                         lances_possiveis.append(((i, j), (destino_i, destino_j)))
 
         return lances_possiveis
 
     def simularMovimento(self, origem, destino):
         """Retorna uma cópia do tabuleiro após um movimento."""
-        tabuleiro_simulado = [linha[:] for linha in self.tabAtual]  # Copia o tabuleiro
+        tabuleiro_simulado = [linha[:] for linha in self.tabAtual] 
         origem_x, origem_y = origem
         destino_x, destino_y = destino
         pedra = tabuleiro_simulado[origem_x][origem_y]
@@ -350,7 +350,7 @@ class Xadrez:
         return tabuleiro_simulado
 
     def pode_fazer_roque(self, cor):
-        # Define as posições iniciais do rei e das torres com base na cor
+       
         if self.emXeque(cor):
             return False
 
@@ -358,12 +358,12 @@ class Xadrez:
             rei_pos = (7, 4)
             torre_esq_pos = (7, 0)
             torre_dir_pos = (7, 7)
-        else:  # cor == 'pretas'
+        else:  
             rei_pos = (0, 4)
             torre_esq_pos = (0, 0)
             torre_dir_pos = (0, 7)
         
-        # Verifica se o rei ou as torres já se moveram
+     
         for jogada in self.jogadas:
             if jogada[0] == rei_pos:
                 return False
@@ -372,20 +372,18 @@ class Xadrez:
             if jogada[0] == torre_dir_pos:
                 return False
         
-        # Verifica se o rei está em xeque ou passará por casas atacadas
+       
         lances_adversarios = self.buscarTodosLances()
         casas_proibidas = {lance[1] for lance in lances_adversarios}
         
         if rei_pos in casas_proibidas:
             return False
         
-        # Verifica se há peças entre o rei e as torres e se as casas por onde o rei passará não estão sob ataque
-        # Roque grande (movimento para a esquerda)
+      
         if self.tabAtual[rei_pos[0]][1] == '.' and self.tabAtual[rei_pos[0]][2] == '.' and self.tabAtual[rei_pos[0]][3] == '.':
             if (rei_pos[0], 2) not in casas_proibidas and (rei_pos[0], 3) not in casas_proibidas:
                 return 'roque grande'
-        
-        # Roque pequeno (movimento para a direita)
+     
         if self.tabAtual[rei_pos[0]][5] == '.' and self.tabAtual[rei_pos[0]][6] == '.':
             if (rei_pos[0], 5) not in casas_proibidas and (rei_pos[0], 6) not in casas_proibidas:
                 return 'roque pequeno'
@@ -406,21 +404,21 @@ class Xadrez:
             print("Lance inválido: Posições fora do tabuleiro")
             return
 
-        # Verifica o turno apenas se checkTurn for True
+    
         if checkTurn and not self.verificarTurno(pedra):
             return "Lance inválido: Não é a vez dessa cor"
 
-        # Valida o movimento da peça
-        if pedra.upper() == 'T':  # Torre
+     
+        if pedra.upper() == 'T': 
             movimentos_validos = self.movimentoTorre(pedra, origem_x, origem_y)
-        elif pedra.upper() == 'C':  # Cavalo
+        elif pedra.upper() == 'C':  
             movimentos_validos = self.movimentoCavalo(pedra, origem_x, origem_y)
-        elif pedra.upper() == 'P':  # Peão
+        elif pedra.upper() == 'P':  
             movimentos_validos = self.movimentoPeao(pedra, origem_x, origem_y)
-        elif pedra.upper() == 'B':  # Bispo
+        elif pedra.upper() == 'B':  
             movimentos_validos = self.movimentoBispo(pedra, origem_x, origem_y)
 
-        elif pedra.upper() == 'R':  # Rei
+        elif pedra.upper() == 'R':  
             movimentos_validos = self.movimentoRei(pedra, origem_x, origem_y)
             resultado_roque = self.pode_fazer_roque(self.turno)
             if resultado_roque == 'roque pequeno':
@@ -428,7 +426,7 @@ class Xadrez:
             elif resultado_roque == 'roque grande':
                 movimentos_validos.append(((origem_x), (origem_y - 2)))
 
-        elif pedra.upper() == 'D':  # Dama
+        elif pedra.upper() == 'D':  
             movimentos_validos = self.movimentoDama(pedra, origem_x, origem_y)
         else:
             return "Movimentação para essa peça ainda não foi implementada."
@@ -436,12 +434,12 @@ class Xadrez:
         if (origem_x, origem_y, destino_x, destino_y) not in movimentos_validos:
             return "Lance inválido para a peça!"
 
-        # Simula o movimento e verifica se o rei ficará em xeque
+      
         tabuleiro_simulado = self.simularMovimento(origem, destino)
         if self.emXeque(self.turno, tabuleiro_simulado):
             return "Movimento inválido: Rei ainda em xeque!"
 
-        return None  # Retorna None se o lance for válido
+        return None
             
 
 
@@ -450,46 +448,45 @@ class Xadrez:
         destino_x, destino_y = destino
         pedra = self.tabAtual[origem_x][origem_y]
 
-        # Verifica se o turno está correto
+    
         if not self.verificarTurno(pedra):
             print("Lance inválido: Não é a vez dessa cor")
             return
 
-        # Verifica se o movimento é um roque (movimento de 2 casas para os lados)
+     
         if (destino_x, destino_y) == (origem_x, origem_y + 2) or (destino_x, destino_y) == (origem_x, origem_y - 2):
             resultado_roque = self.pode_fazer_roque(self.tabAtual, self.turno)
             if resultado_roque:
                 if resultado_roque == "roque grande":
-                    # Roque grande: rei vai de (x,4) para (x,2) e torre de (x,0) para (x,3)
-                    self.tabAtual[origem_x][origem_y] = "."  # Remove o rei da posição original
+                   
+                    self.tabAtual[origem_x][origem_y] = "."  
                     self.tabAtual[origem_x][origem_y - 2] = "R" if self.turno == 'brancas' else "r"
-                    self.tabAtual[origem_x][0] = "."  # Remove a torre da posição original
+                    self.tabAtual[origem_x][0] = "."  
                     self.tabAtual[origem_x][3] = "T" if self.turno == 'brancas' else "t"
                     print("Roque grande realizado!")
                 elif resultado_roque == "roque pequeno":
-                    # Roque pequeno: rei vai de (x,4) para (x,6) e torre de (x,7) para (x,5)
+                   
                     self.tabAtual[origem_x][origem_y] = "."
                     self.tabAtual[origem_x][origem_y + 2] = "R" if self.turno == 'brancas' else "r"
                     self.tabAtual[origem_x][7] = "."
                     self.tabAtual[origem_x][5] = "T" if self.turno == 'brancas' else "t"
                     print("Roque pequeno realizado!")
-                self.mudarTurno()  # Troca de turno após o roque
+                self.mudarTurno()  
                 self.jogadas.append((origem, destino))
                 return
             else:
                 print("Roque inválido!")
                 return
 
-        # Se não for roque, valida o lance normalmente
+     
         if not self.validarLance(pedra, origem, destino):
             print("Lance inválido: Movimento não permitido para essa peça")
             return
 
-        # Movimento normal da peça
         self.tabAtual[destino_x][destino_y] = pedra
         self.tabAtual[origem_x][origem_y] = "."
 
-        # Registra a jogada e muda o turno
+        
         self.jogadas.append((origem, destino))
         self.mudarTurno()
 
