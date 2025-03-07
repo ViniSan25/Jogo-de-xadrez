@@ -335,6 +335,7 @@ class Xadrez:
                         movimentos_validos = self.movimentoDama(peca, i, j)
                     else:
                         continue
+
                     for movimento in movimentos_validos:
                         destino_i, destino_j = movimento[2], movimento[3]
                       
@@ -384,6 +385,21 @@ class Xadrez:
                 (rei_pos[0], 6) not in casas_proibidas):
                 return 'roque pequeno'
         return False
+    
+    def verificarFimDeJogo(self):
+       
+        lances = self.buscarTodosLances(self.turno)
+        if not lances:
+           
+            if self.emXeque(self.turno):
+                vencedor = "pretas" if self.turno == "brancas" else "brancas"
+                print(f"Xeque mate! Vitória das {vencedor}.")
+                return "xeque mate", vencedor
+            else:
+                
+                print("Empate por afogamento!")
+                return "empate", None
+        return None, None
 
     def validarLance(self, pedra, origem, destino, checkTurn=True):
         origem_x, origem_y = origem
@@ -475,6 +491,13 @@ class Xadrez:
         self.jogadas.append((origem, destino))
         self.mudarTurno()
 
+        
+        fim, vencedor = self.verificarFimDeJogo()
+        if fim == "xeque mate":
+            print(f"Fim de jogo: Xeque mate! Vitória das {vencedor}.")
+        elif fim == "empate":
+            print("Fim de jogo: Empate por afogamento.")
+
 
     
         
@@ -501,6 +524,16 @@ xadrez.printarTabuleiro()
 xadrez.moverPedra((1, 5), (2, 5))
 xadrez.printarTabuleiro()
 xadrez.buscarTodosLances()
+
+if xadrez.emXeque('pretas'):
+    print('esta em xeque')
+
+else:  
+    print('nao esta em xeque')
+
+
+
+
 
 
 
